@@ -1,125 +1,527 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>อบรมขับขี่รถ Forklift ถูกต้องและปลอดภัย</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    <title>รายชื่ออบรมพนักงาน</title>
+
+    <!-- Google Font: Inter (kept for fallback or if other elements use it) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Font: Sarabun (Added as requested) -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- DataTables CSS -->
+    <link href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <link rel="shortcut icon" href="#">
+
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f4;
+            font-family: 'Sarabun', 'Inter', sans-serif; /* Changed to Sarabun, with Inter as fallback */
+            background-color: #f8f9fa;
         }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        .container-fluid {
+            padding-top: 20px;
+            padding-bottom: 20px;
         }
-        h2 {
-            color: #333;
-            text-align: center;
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
         }
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+        .nav-tabs .nav-link {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            color: #495057;
+            font-weight: 500;
+        }
+        .nav-tabs .nav-link.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff #007bff #fff;
+        }
+        .tab-pane {
+            padding: 20px;
+            background-color: #ffffff;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+        }
+        .table-responsive {
+            margin-top: 20px;
+        }
+        table.dataTable thead th {
+            background-color: #e9ecef;
+            color: #495057;
+            border-bottom: 2px solid #dee2e6;
+        }
+        /* Removed specific tbody tr:hover background-color as it might conflict.
+           DataTables default hover should be fine, or can be re-added with higher specificity if needed. */
+        /* table.dataTable tbody tr:hover {
+            background-color: #f1f1f1 !important;
+        } */
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 8px 12px;
+            margin-left: 0.5em;
+        }
+        .dataTables_wrapper .dataTables_length select {
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            padding: 8px 12px;
+            margin-right: 0.5em;
+        }
+        /* Adjusted button styles for better contrast */
+        .dt-buttons .btn {
+            border-radius: 8px;
+            margin-right: 5px;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            color: white !important; /* Ensure text/icon is white */
+        }
+        /* Specific button background colors */
+        .dt-buttons .btn-copy {
+            background-color: #007bff; /* Primary blue */
+            border-color: #007bff;
+        }
+        .dt-buttons .btn-excel {
+            background-color: #28a745; /* Success green */
+            border-color: #28a745;
+        }
+        .dt-buttons .btn-pdf {
+            background-color: #dc3545; /* Danger red */
+            border-color: #dc3545;
+        }
+        .dt-buttons .btn-print {
+            background-color: #17a2b8; /* Info cyan */
+            border-color: #17a2b8;
+        }
+
+        .loading-spinner {
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            height: 300px;
         }
-        .loader {
-            border: 16px solid #f3f3f3;
-            border-top: 16px solid #3498db;
-            border-radius: 50%;
-            width: 120px;
-            height: 120px;
-            animation: spin 2s linear infinite;
+        .error-message {
+            color: #dc3545;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /* Styles for the color legend */
+        .color-legend {
+            margin-top: 15px; /* Keep some top margin */
+            margin-bottom: 15px; /* Keep some bottom margin */
+            font-size: 0.9em;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start; /* Align items to the start (left) */
+        }
+        .color-legend > span {
+            /* Using Bootstrap d-inline-flex and align-items-center utilities */
+            margin-right: 20px; /* Space between items */
+            margin-bottom: 5px; /* Small margin for wrapping */
+        }
+        .color-box {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 1px solid #ccc;
+            vertical-align: middle;
+            margin-right: 5px;
+            border-radius: 50%; /* Make it a circle */
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+
+        /* Styles for table row highlighting - User's successful CSS (kept for robustness) */
+        table.dataTable tbody tr.highlight-yellow,
+        table.dataTable tbody tr.highlight-yellow td,
+        table.dataTable tbody tr.highlight-yellow:hover,
+        table.dataTable tbody tr.highlight-yellow:hover td {
+            background-color: #ffff00 !important;
+            color: #000 !important;
+        }
+
+        table.dataTable tbody tr.highlight-green,
+        table.dataTable tbody tr.highlight-green td,
+        table.dataTable tbody tr.highlight-green:hover,
+        table.dataTable tbody tr.highlight-green:hover td {
+            background-color: #008000 !important;
+            color: #fff !important;
+        }
+
+        table.dataTable tbody tr.highlight-white,
+        table.dataTable tbody tr.highlight-white td {
+            background-color: #ffffff !important;
+        }
+
+        /* Hide DataTables buttons on small screens */
+        @media (max-width: 768px) {
+            .dt-buttons {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <h2>รายชื่อผู้เข้าร่วมอบรมขับขี่รถ Forklift ถูกต้องและปลอดภัย ปี 2568</h2>
-        <h2>รุ่นที่ 1 :  วันที่  2 มิถุนายน  2568</h2>
-        <table id="participantTable" class="table table-striped table-bordered" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Timestamp</th>
-                    <th>Gender</th>
-                    <th>FirstName</th>
-                    <th>LastName</th>
-                    <th>Organization</th>
-                   
-                    <th>Department</th>
-                    <th>JobTitle</th>
-                </tr>
-            </thead>
-            <tbody>
-                </tbody>
-        </table>
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>ระบบแสดงรายชื่ออบรมพนักงาน</h2>
+            </div>
+            <div class="card-body">
+                <div id="loadingSpinner" class="loading-spinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">กำลังโหลด...</span>
+                    </div>
+                    <p class="ms-3">กำลังโหลดข้อมูล...</p>
+                </div>
+                <div id="errorMessage" class="error-message d-none">
+                    <p>เกิดข้อผิดพลาดในการโหลดข้อมูล: โปรดลองอีกครั้งในภายหลัง หรือตรวจสอบ URL API</p>
+                </div>
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <!-- Tabs will be dynamically generated here -->
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <!-- Tab panes will be dynamically generated here -->
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="loading">
-        <div class="loader"></div>
-    </div>
+    <!-- jQuery (required for DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+    
+    <!-- DataTables Buttons -->
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.colVis.min.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
     <script>
-        $(document).ready(function() {
-            var gg = "https://script.google.com/macros/s/AKfycbztF6utdAozv8QHmxh73Y0WRwmRIbu0B0Rr66kTJJPK_E2MRn51KY7BTMBTZI1sFlNmFA/exec";
-            var loading = $('.loading');
+        // API URL จาก Google Apps Script ของคุณ
+        const apiUrl = 'https://script.google.com/macros/s/AKfycbz8nJ_Hy-3jOBjpwuM7xKgbOKDuBE6OjqPLvWKZzatgi9J_lvl6nrVRSLjPIZ-UVxOeCQ/exec';
 
-            function fetchData(callback) {
-                loading.show();
-                $.ajax({
-                    url: gg,
-                    dataType: 'json',
-                    success: function(data) {
-                        callback(data);
-                    },
-                    error: function(error) {
-                        console.error("Error fetching data:", error);
-                        callback([]);
-                    }
-                });
-            }
+        // Map สำหรับชื่อเดือนไทย (เหมือนใน Apps Script)
+        const thaiMonthMap = {
+            'ม.ค.': 'มกราคม',
+            'ก.พ.': 'กุมภาพันธ์',
+            'มี.ค.': 'มีนาคม',
+            'เม.ย.': 'เมษายน',
+            'พ.ค.': 'พฤษภาคม',
+            'มิ.ย.': 'มิถุนายน',
+            'ก.ค.': 'กรกฎาคม',
+            'ส.ค.': 'สิงหาคม',
+            'ก.ย.': 'กันยายน',
+            'ต.ค.': 'ตุลาคม',
+            'พ.ย.': 'พฤศจิกายน',
+            'ธ.ค.': 'ธันวาคม'
+        };
 
-            fetchData(function(data) {
-                $('#participantTable').DataTable({
-                    data: data,
-                    columns: [
-                        { data: 'Timestamp' },
-                        { data: 'Gender' },
-                        { data: 'FirstName' },
-                        { data: 'LastName' },
-                        { data: 'Organization' },
-                     
-                        { data: 'Department' },
-                        { data: 'JobTitle' }
-                    ],
-                    initComplete: function() {
-                        loading.hide();
-                    },
-                    language: {
-                        url: '//cdn.datatables.net/plug-ins/1.10.24/i18n/Thai.json' // เพิ่มภาษาไทย
-                    },
-                    pageLength: 10, // กำหนดจำนวนแถวต่อหน้า
-                    lengthMenu: [10, 25, 50, 100], // กำหนดตัวเลือกจำนวนแถวต่อหน้า
-                    responsive: true // เปิดใช้งาน responsive
-                });
+        // ฟังก์ชันสำหรับแปลงชื่อชีตเป็น title2
+        function formatTitle2(sheetName, index) {
+            const parts = sheetName.split(' '); // e.g., ['7', 'ส.ค.', '68']
+            const day = parts[0];
+            const monthAbbr = parts[1];
+            const yearBE = parts[2];
+            const fullMonthName = thaiMonthMap[monthAbbr] || monthAbbr;
+            return `รุ่นที่ ${index + 1} วันที่ ${day} ${fullMonthName} ${yearBE}`;
+        }
+
+        /**
+         * Counts and logs the number of entries in each session where status is not 1.
+         * Also logs the details of each row that meets this condition.
+         * This function is intended for debugging and can be run in the browser's console.
+         * @param {Object} data - The entire data object fetched from the API.
+         */
+        function logNonStatusOneCounts(data) {
+        //    console.log("--- Status Count (not equal to 1) per Session ---");
+            Object.keys(data).forEach(sessionKey => {
+                const sessionData = data[sessionKey];
+                const nonStatusOneEntries = sessionData.data.filter(row => row.status !== 1);
+                
+            //    console.log(`Session: ${sessionKey} (${sessionData.sheetName}) - Non-status 1 entries: ${nonStatusOneEntries.length}`);
+                
+                if (nonStatusOneEntries.length > 0) {
+                    console.log("Details of non-status 1 entries:");
+                    nonStatusOneEntries.forEach(entry => {
+                        //console.log(entry); // Log each row object
+                    });
+                }
             });
+        //    console.log("-------------------------------------------------");
+        }
+
+        // เมื่อ DOM โหลดเสร็จสมบูรณ์
+        $(document).ready(function() {
+            const loadingSpinner = $('#loadingSpinner');
+            const errorMessage = $('#errorMessage');
+            const myTab = $('#myTab');
+            const myTabContent = $('#myTabContent');
+
+            // ซ่อนเนื้อหาและแสดง Loading Spinner
+            myTab.hide();
+            myTabContent.hide();
+            loadingSpinner.removeClass('d-none').show();
+            errorMessage.addClass('d-none');
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    loadingSpinner.hide();
+                    myTab.show();
+                    myTabContent.show();
+
+                    // Call the new function to log non-status 1 counts and details
+                    logNonStatusOneCounts(data);
+
+                    // Updated: Use PNG image URL and modify onerror to fallback to text "BSA"
+                    const bsaLogoUrl = 'https://jobs.pttbsa.com/static/zeplin/BSA-logo-sq.png';
+                    const bsaLogoTag = `<img src="${bsaLogoUrl}" alt="BSA Logo" style="height: 1.2em; vertical-align: middle; margin-right: 0.2em; display: inline-block;" onerror="this.outerHTML = 'BSA';" />`;
+
+                    let firstTab = true;
+                    // วนลูปผ่านแต่ละ session ในข้อมูลที่ได้มา
+                    Object.keys(data).forEach((sessionKey, index) => {
+                        const sessionData = data[sessionKey];
+                        const tabId = `session-${index + 1}`;
+                        const isActive = firstTab ? 'active' : '';
+                        const isSelected = firstTab ? 'true' : 'false';
+
+                        // Modify title1 to replace "BSA" with the new image tag or fallback text
+                        let modifiedTitle1 = sessionData.title1.replace('BSA', bsaLogoTag);
+
+                        // สร้าง Tab Navigation Link
+                        myTab.append(`
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link ${isActive} rounded-top" id="${tabId}-tab" data-bs-toggle="tab" data-bs-target="#${tabId}" type="button" role="tab" aria-controls="${tabId}" aria-selected="${isSelected}">
+                                    ${sessionData.sheetName}
+                                </button>
+                            </li>
+                        `);
+
+                        // สร้าง Tab Pane Content
+                        myTabContent.append(`
+                            <div class="tab-pane fade ${isActive} show" id="${tabId}" role="tabpanel" aria-labelledby="${tabId}-tab">
+                                <h4 class="mb-2 text-primary">${modifiedTitle1}</h4>
+                                <h5 class="mb-2 text-secondary">${sessionData.title2}</h5>
+                                <p class="mb-4 text-muted">${sessionData.title3}</p>
+                                
+                                <!-- New: Additional title with red asterisk -->
+                                <p class="mb-3">
+                                    <span class="text-danger">*</span> พนักงานที่มาอบรมจะต้องมาก่อนเวลาอบรม 30 นาที เนื่องจากต้องทำ ข้อสอบ pre-test
+                                </p>
+
+                                <!-- New: Summary of trainees for the day, with dynamic sheet name -->
+                                <p class="mb-3"><strong>จำนวนผู้เข้าอบรม วันที่ ${sessionData.sheetName} มีทั้งหมด: ${sessionData.data.length} คน</strong></p>
+
+                                <!-- Color Legend is now placed here, outside the DataTables wrapper -->
+                                <div class="color-legend mt-3 mb-3">
+                                    <span class="d-inline-flex align-items-center me-4">
+                                        <span class="color-box me-2" style="background-color: white;"></span> สีขาว: รายชื่อเดิม
+                                    </span>
+                                    <span class="d-inline-flex align-items-center me-4">
+                                        <span class="color-box me-2" style="background-color: yellow;"></span> สีเหลือง: รายชื่อที่แก้ไขใหม่
+                                    </span>
+                                    <span class="d-inline-flex align-items-center">
+                                        <span class="color-box me-2" style="background-color: green;"></span> สีเขียว: รายชื่อที่เพิ่มเข้ามาใหม่
+                                    </span>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table id="table-${tabId}" class="table table-bordered dt-responsive nowrap w-100"> <!-- Removed table-striped -->
+                                        <thead>
+                                            <tr>
+                                                <th>ลำดับ</th>
+                                                <th>รหัสพนักงาน</th>
+                                                <th>คำนำหน้าชื่อ</th>
+                                                <th>ชื่อ</th>
+                                                <th>นามสกุล</th>
+                                                <th>ตำแหน่ง</th>
+                                                <th>แผนก</th>
+                                                <th>เลขบัตรประชาชน</th>
+                                                <th>การสอบ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Data will be populated by DataTables -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        `);
+
+                        // เตรียมข้อมูลสำหรับ DataTables
+                        const tableData = sessionData.data.map(row => {
+                            // The DT_RowClass is used to apply the CSS classes for highlighting.
+                            // The inline styling in createdRow below will override background-color and color,
+                            // but having the class can still be useful for other CSS rules (e.g., borders, padding)
+                            // or for debugging.
+                            const rowClass = `highlight-${row.highlightColor}`; 
+                            return {
+                                'order': row.order,
+                                'employeeId': row.employeeId,
+                                'title': row.title,
+                                'firstName': row.firstName,
+                                'lastName': row.lastName,
+                                'position': row.position,
+                                'department': row.department,
+                                'nationalId': row.nationalId,
+                                'examType': row.examType,
+                                'status': row.status,
+                                'highlightColor': row.highlightColor, // Keep highlightColor in rowData
+                                'DT_RowClass': rowClass // Use DT_RowClass for better styling control
+                            };
+                        });
+
+                        // กำหนดคอลัมน์สำหรับ DataTables
+                        const columns = [
+                            { data: 'order', title: 'ลำดับ' },
+                            { data: 'employeeId', title: 'รหัสพนักงาน' },
+                            { data: 'title', title: 'คำนำหน้าชื่อ' },
+                            { data: 'firstName', title: 'ชื่อ' },
+                            { data: 'lastName', title: 'นามสกุล' },
+                            { data: 'position', title: 'ตำแหน่ง' },
+                            { data: 'department', title: 'แผนก' },
+                            { data: 'nationalId', title: 'เลขบัตรประชาชน' },
+                            { 
+                                data: 'examType', 
+                                title: 'การสอบ',
+                                render: function(data, type, row) {
+                                    if (type === 'display' && data && typeof data === 'string') {
+                                        return 'ภาค' + data;
+                                    }
+                                    return data;
+                                }
+                            }
+                        ];
+
+                        // เริ่มต้น DataTables
+                        $(`#table-${tabId}`).DataTable({
+                            data: tableData,
+                            columns: columns,
+                            responsive: {
+                                details: false, // ปิดการแสดงรายละเอียดเมื่อคลิก
+                                breakpoints: [
+                                    { name: 'desktop', width: Infinity },
+                                    { name: 'tablet',  width: 1024 },
+                                    { name: 'mobile',  width: 768 }
+                                ]
+                            },
+                            columnDefs: [
+                                {
+                                    targets: [0, 3], // คอลัมน์ลำดับ (0) และชื่อ (3)
+                                    className: 'all' // แสดงตลอดเวลาบนทุก device
+                                },
+                                {
+                                    targets: [1, 2, 4, 5, 6, 7, 8], // คอลัมน์อื่นๆ ที่ต้องการซ่อนบน mobile
+                                    className: 'min-tablet' // แสดงบน Tablet และ Desktop, ซ่อนบน Mobile
+                                }
+                            ],
+                            dom: 'Bfrtip',
+                            buttons: [
+                                {
+                                    extend: 'copyHtml5',
+                                    text: '<i class="fa-solid fa-copy"></i> คัดลอก',
+                                    className: 'btn btn-copy rounded-pill me-2'
+                                },
+                                {
+                                    extend: 'excelHtml5',
+                                    text: '<i class="fa-solid fa-file-excel"></i> Excel',
+                                    className: 'btn btn-excel rounded-pill me-2',
+                                    title: sessionData.title1 + ' - ' + sessionData.title2
+                                },
+                                {
+                                    extend: 'pdfHtml5',
+                                    text: '<i class="fa-solid fa-file-pdf"></i> PDF',
+                                    className: 'btn btn-pdf rounded-pill me-2',
+                                    title: sessionData.title1 + ' - ' + sessionData.title2,
+                                    orientation: 'landscape',
+                                    pageSize: 'A4'
+                                },
+                                {
+                                    extend: 'print',
+                                    text: '<i class="fa-solid fa-print"></i> พิมพ์',
+                                    className: 'btn btn-print rounded-pill me-2',
+                                    title: sessionData.title1 + ' - ' + sessionData.title2
+                                }
+                            ],
+                            language: {
+                                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/th.json'
+                            },
+                            // Use createdRow callback for direct row styling
+                            createdRow: function(rowElement, rowData, dataIndex) {
+                                const highlightColor = rowData.highlightColor;
+                                if (highlightColor) { // Check if highlightColor exists
+                                    let bgColor = '';
+                                    let textColor = '';
+
+                                    switch (highlightColor) {
+                                        case 'yellow':
+                                            bgColor = '#ffff00'; // Standard yellow
+                                            textColor = '#000000'; // Black text for contrast
+                                            break;
+                                        case 'green':
+                                            bgColor = '#008000'; // Standard green
+                                            textColor = '#ffffff'; // White text for contrast
+                                            break;
+                                        case 'white':
+                                        default: // Handles 'white' and any other unexpected values
+                                            bgColor = '#ffffff'; // White background
+                                            textColor = '#000000'; // Black text
+                                            break;
+                                    }
+                                    
+                                    // Apply background color to the row
+                                    $(rowElement).css('background-color', bgColor);
+                                    // Apply text color to the cells within the row
+                                    $(rowElement).find('td').css('color', textColor);
+                                }
+                            }
+                        });
+
+                        firstTab = false;
+                    });
+
+                })
+                .catch(error => {
+                    loadingSpinner.hide();
+                    errorMessage.removeClass('d-none').show();
+                    console.error('Error fetching data:', error);
+                });
         });
     </script>
 </body>
