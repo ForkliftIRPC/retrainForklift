@@ -264,21 +264,21 @@
          * @param {Object} data - The entire data object fetched from the API.
          */
         function logNonStatusOneCounts(data) {
-        //    console.log("--- Status Count (not equal to 1) per Session ---");
+            console.log("--- Status Count (not equal to 1) per Session ---");
             Object.keys(data).forEach(sessionKey => {
                 const sessionData = data[sessionKey];
                 const nonStatusOneEntries = sessionData.data.filter(row => row.status !== 1);
                 
-            //    console.log(`Session: ${sessionKey} (${sessionData.sheetName}) - Non-status 1 entries: ${nonStatusOneEntries.length}`);
+                console.log(`Session: ${sessionKey} (${sessionData.sheetName}) - Non-status 1 entries: ${nonStatusOneEntries.length}`);
                 
                 if (nonStatusOneEntries.length > 0) {
                     console.log("Details of non-status 1 entries:");
                     nonStatusOneEntries.forEach(entry => {
-                        //console.log(entry); // Log each row object
+                        console.log(entry); // Log each row object
                     });
                 }
             });
-        //    console.log("-------------------------------------------------");
+            console.log("-------------------------------------------------");
         }
 
         // เมื่อ DOM โหลดเสร็จสมบูรณ์
@@ -372,7 +372,7 @@
                                                 <th>นามสกุล</th>
                                                 <th>ตำแหน่ง</th>
                                                 <th>แผนก</th>
-                                                <th>เลขบัตรประชาชน</th>
+                                                <!-- Removed <th>เลขบัตรประชาชน</th> -->
                                                 <th>การสอบ</th>
                                             </tr>
                                         </thead>
@@ -399,7 +399,7 @@
                                 'lastName': row.lastName,
                                 'position': row.position,
                                 'department': row.department,
-                                'nationalId': row.nationalId,
+                                // Removed 'nationalId' from rowData
                                 'examType': row.examType,
                                 'status': row.status,
                                 'highlightColor': row.highlightColor, // Keep highlightColor in rowData
@@ -416,7 +416,7 @@
                             { data: 'lastName', title: 'นามสกุล' },
                             { data: 'position', title: 'ตำแหน่ง' },
                             { data: 'department', title: 'แผนก' },
-                            { data: 'nationalId', title: 'เลขบัตรประชาชน' },
+                            // Removed column definition for 'nationalId'
                             { 
                                 data: 'examType', 
                                 title: 'การสอบ',
@@ -447,7 +447,8 @@
                                     className: 'all' // แสดงตลอดเวลาบนทุก device
                                 },
                                 {
-                                    targets: [1, 2, 4, 5, 6, 7, 8], // คอลัมน์อื่นๆ ที่ต้องการซ่อนบน mobile
+                                    // Adjusted targets after removing nationalId (index 7)
+                                    targets: [1, 2, 4, 5, 6, 7], // รหัสพนักงาน (1), คำนำหน้าชื่อ (2), นามสกุล (4), ตำแหน่ง (5), แผนก (6), การสอบ (7)
                                     className: 'min-tablet' // แสดงบน Tablet และ Desktop, ซ่อนบน Mobile
                                 }
                             ],
